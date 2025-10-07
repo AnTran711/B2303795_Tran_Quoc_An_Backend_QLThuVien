@@ -1,0 +1,17 @@
+import express from 'express';
+import bookController from '../controllers/book.controller.js';
+import { uploadMiddleware } from '../middlewares/uploadMiddleware.js';
+
+const router = express.Router();
+
+router.route('/')
+  .get(bookController.findAll)
+  .post(uploadMiddleware.upload.single('ANHBIA'), bookController.create)
+  .delete(bookController.deleteAll);
+
+router.route('/:bookId')
+  .get(bookController.findOne)
+  .put(bookController.update)
+  .delete(bookController.delete);
+
+export default router;
