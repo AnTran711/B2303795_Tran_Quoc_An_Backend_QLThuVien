@@ -5,14 +5,11 @@ class BookController {
   // [POST] /api/books/
   async create(req, res, next) {
     try {
-      console.log('req.body:', req.body);
-      console.log('req.file:', req.file);
-      console.log('req:', req);
-
       const imageUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
 
       const book = new Book({
         ...req.body,
+        SACHCONLAI: req.body.SOQUYEN,
         ANHBIA: imageUrl
       });
       await book.save();
