@@ -1,5 +1,6 @@
 import Publisher from '../models/publisher.model.js';
 import ApiError from '../api_error.js';
+import { StatusCodes } from 'http-status-codes';
 
 class PublisherController {
   // [POST] /api/publishers
@@ -7,10 +8,14 @@ class PublisherController {
     try {
       const publisher = new Publisher(req.body);
       await publisher.save();
-      return res.send({ message: 'Created a publisher successfully' });
+      return res.status(StatusCodes.CREATED).json({
+        status: 'success',
+        message: 'Thêm nhà xuất bản thành công',
+        data: publisher
+      });
     } catch (err) {
       console.error(err);
-      return next(new ApiError(500, 'An error occurred while creating a publisher'));
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Thêm nhà xuất bản thất bại, vui lòng thử lại sau'));
     }
   }
 
@@ -18,10 +23,14 @@ class PublisherController {
   async findAll(req, res, next) {
     try {
       const publishers = await Publisher.find().lean();
-      return res.send(publishers);
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'Lấy nhà xuất bản thành công',
+        data: publishers
+      });
     } catch (err) {
       console.error(err);
-      return next(new ApiError(500, 'An error occurred while retrieving publishers '));
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối đến server, vui lòng thử lại sau'));
     }
   }
 
@@ -39,11 +48,19 @@ class PublisherController {
   // [PUT] /api/publishers/:publisherId
   async update(req, res, next) {
     try {
-      await Publisher.updateOne({ MANXB: req.params.publisherId }, req.body);
-      return res.send({ message: 'A publisher was updated successfully' });
+      const publisher = await Publisher.findOneAndUpdate(
+        { MANXB: req.params.publisherId },
+        req.body,
+        { new: true }
+      );
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'Cập nhật sách thành công',
+        data: publisher
+      });
     } catch (err) {
       console.error(err);
-      return next(new ApiError(500, 'An error occurred while updating a publisher'));
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Cập nhật sách thất bại, vui lòng thử lại sau'));
     }
   }
 
@@ -62,10 +79,13 @@ class PublisherController {
   async delete(req, res, next) {
     try {
       await Publisher.deleteOne({ MANXB: req.params.publisherId });
-      return res.send({ message: 'A publisher was deleted successfully' });
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'Xóa sách thành công'
+      });
     } catch (err) {
       console.error(err);
-      return next(new ApiError(500, 'An error occurred while deleting a publisher'));
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Xóa sách thất bại, vui lòng thử lại sau'));
     }
   }
 }

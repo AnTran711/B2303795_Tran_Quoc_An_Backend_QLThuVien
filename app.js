@@ -10,6 +10,7 @@ import ApiError from './src/api_error.js';
 import db from './src/utils/mongodb.util.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { StatusCodes } from 'http-status-codes';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,13 +38,15 @@ app.get('/', (req, res) => {
 
 // Handle 404 error
 app.use((req, res, next) => {
-  return next(new ApiError(404, 'Resource not found'));
+  return next(new ApiError('error', 'Resource not found'));
 });
 
 // Define error-handling middleware last
-app.use((err, req, res) => {
-  res.status(err.statusCode || 500).json({
-    message: err.message || 'Internal Server Error'
+app.use((err, req, res, next) => {
+  res.status(err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+    statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+    status: err.status || 'error',
+    message: err.message || 'Internal server error'
   });
 });
 

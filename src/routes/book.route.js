@@ -11,7 +11,7 @@ router.route('/')
 
 router.route('/:bookId')
   .get(bookController.findOne)
-  .put(bookController.update)
+  .put(uploadMiddleware.upload.single('ANHBIA'), bookController.update)
   .delete(bookController.delete);
 
 export default router;

@@ -28,7 +28,8 @@ const bookSchema = new Schema({
     type: Number
   },
   MANXB: {
-    type: String
+    type: String,
+    required: true
   },
   MATACGIA: {
     type: String
