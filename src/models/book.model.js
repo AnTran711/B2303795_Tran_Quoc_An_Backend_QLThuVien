@@ -15,6 +15,9 @@ const bookSchema = new Schema({
   ANHBIA: {
     type: String
   },
+  MOTA: {
+    type: String
+  },
   DONGIA: {
     type: Number
   },
@@ -31,7 +34,7 @@ const bookSchema = new Schema({
     type: String,
     required: true
   },
-  MATACGIA: {
+  TENTACGIA: {
     type: String
   }
 }, {
