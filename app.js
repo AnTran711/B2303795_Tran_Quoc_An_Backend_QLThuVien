@@ -2,14 +2,15 @@ import express from 'express';
 import cors from 'cors';
 import bookRouter from './src/routes/book.route.js';
 import publisherRouter from './src/routes/publisher.route.js';
-import employeeRouter from './src/routes/employee.route.js';
-import readerRouter from './src/routes/reader.route.js';
 import bookBorrowingRouter from './src/routes/bookborrowing.route.js';
+import authReaderRouter from './src/routes/authreader.route.js';
+import readerRouter from './src/routes/reader.route.js';
 import ApiError from './src/api_error.js';
 import db from './src/utils/mongodb.util.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { StatusCodes } from 'http-status-codes';
+import cookieParser from 'cookie-parser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,14 +22,15 @@ db.connect();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/books', bookRouter);
 app.use('/api/publishers', publisherRouter);
-app.use('/api/employees', employeeRouter);
-app.use('/api/readers', readerRouter);
 app.use('/api/bookBorrowings', bookBorrowingRouter);
+app.use('/api/auth', authReaderRouter);
+app.use('/api/readers', readerRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to library' });

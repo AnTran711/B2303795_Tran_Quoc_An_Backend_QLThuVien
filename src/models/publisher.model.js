@@ -15,6 +15,8 @@ const publisherSchema = new Schema({
   DIACHI: {
     type: String
   }
+}, {
+  timestamps: true
 });
 
 export default mongoose.model('NHAXUATBAN', publisherSchema, 'NHAXUATBAN');

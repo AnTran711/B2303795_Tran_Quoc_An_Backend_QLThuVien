@@ -24,6 +24,8 @@ const employeeSchema = new Schema({
   SODIENTHOAI: {
     type: String
   }
+}, {
+  timestamps: true
 });
 
 export default mongoose.model('NHANVIEN', employeeSchema, 'NHANVIEN');

@@ -15,6 +15,8 @@ const bookBorrowingSchema = new Schema({
   NGAYTRA: {
     type: Date
   }
+}, {
+  timestamps: true
 });
 
 export default mongoose.model('THEODOIMUONSACH', bookBorrowingSchema, 'THEODOIMUONSACH');

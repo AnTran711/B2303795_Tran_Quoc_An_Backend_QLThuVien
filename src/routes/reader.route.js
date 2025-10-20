@@ -1,16 +1,10 @@
 import express from 'express';
 import readerController from '../controllers/reader.controller.js';
+import authReaderMiddleware from '../middlewares/authReaderMiddleware.js';
 
 const router = express.Router();
 
 router.route('/')
-  .post(readerController.create)
-  .get(readerController.findAll)
-  .delete(readerController.deleteAll);
-
-router.route('/:readerId')
-  .get(readerController.findOne)
-  .put(readerController.update)
-  .delete(readerController.delete);
+  .get(authReaderMiddleware.verifyToken, readerController.borrowBook);
 
 export default router;

@@ -18,15 +18,21 @@ const readerSchema = new Schema({
     type: String
   },
   PHAI: {
-    // male: true, female: false
+    // nam: true, nữ: false
     type: Boolean
   },
   DIACHI: {
     type: String
   },
   DIENTHOAI: {
+    type: String,
+    unique: true
+  },
+  MATKHAU: {
     type: String
   }
+}, {
+  timestamps: true
 });
 
 export default mongoose.model('DOCGIA', readerSchema, 'DOCGIA');
