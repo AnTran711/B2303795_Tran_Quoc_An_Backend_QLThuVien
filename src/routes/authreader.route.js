@@ -14,6 +14,6 @@ router.post('/login', authreaderController.loginReader);
 router.post('/refresh', authreaderController.requestRefreshToken);
 
 // Logout
-router.post('/logout', authReaderMiddleware.verifyToken, authreaderController.readerLogout);
+router.post('/logout', authreaderController.readerLogout);
 
 export default router;

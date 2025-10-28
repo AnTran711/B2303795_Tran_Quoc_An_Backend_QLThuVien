@@ -7,15 +7,33 @@ class BookController {
   async create(req, res, next) {
     try {
       // Validate trùng mã sách
-      const existingBook = await Book.findOne({ MASACH: req.body.MASACH });
-      if (existingBook) {
-        return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Mã sách đã tồn tại trong hệ thống'));
-      }
+      // const existingBook = await Book.findOne({ MASACH: req.body.MASACH });
+      // if (existingBook) {
+      //   return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Mã sách đã tồn tại trong hệ thống'));
+      // }
 
       // Thêm sách
+
+      // Tại đường đẫn tới hình ảnh
       const imageUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
 
+      // Logic mã sách tự tăng
+      // Lấy sách có mã sách lớn nhất
+      const lastBook = await Book.findOne().sort({ MASACH: -1 }).lean();
+
+      let newNumber = 1;
+
+      if (lastBook) {
+        // Lấy ra số của mã sách
+        const lastNumber = parseInt(lastBook.MASACH.substring(1));
+        newNumber = lastNumber + 1;
+      }
+
+      const newCode = 'S' + newNumber.toString().padStart(3, '0');
+
+      // Lưu sách
       const book = new Book({
+        MASACH: newCode,
         ...req.body,
         SACHCONLAI: req.body.SOQUYEN,
         ANHBIA: imageUrl

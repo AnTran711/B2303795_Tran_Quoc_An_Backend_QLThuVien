@@ -1,11 +1,12 @@
 import express from 'express';
 import bookController from '../controllers/book.controller.js';
 import { uploadMiddleware } from '../middlewares/uploadMiddleware.js';
+import authReaderMiddleware from '../middlewares/authReaderMiddleware.js';
 
 const router = express.Router();
 
 router.route('/')
-  .get(bookController.findAll)
+  .get(authReaderMiddleware.verifyToken, bookController.findAll)
   .post(uploadMiddleware.upload.single('ANHBIA'), bookController.create)
   .delete(bookController.deleteAll);
 

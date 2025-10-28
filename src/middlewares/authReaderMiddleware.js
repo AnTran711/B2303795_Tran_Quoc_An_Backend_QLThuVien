@@ -3,22 +3,30 @@ import config from '../config/index.js';
 import ApiError from '../api_error.js';
 import { StatusCodes } from 'http-status-codes';
 
+const _verifyToken = async (token, secretSignature) => {
+  return jwt.verify(token, secretSignature);
+};
+
 const authReaderMiddleware = {
   // Xác thực người dùng
-  verifyToken (req, res, next) {
-    const token = req.headers.token;
-    // Nếu có token => người dùng đã đăng nhập
-    if (token) {
-      const accessToken = token.split(' ')[1];
-      jwt.verify(accessToken, config.jwt.readerAccessKey, (err, reader) => {
-        if (err) {
-          return next(new ApiError(StatusCodes.FORBIDDEN, 'error', 'Hết phiên đăng nhập'));
-        }
-        req.reader = reader;
-        next();
-      });
-    } else { // Không có token => người dùng chưa đăng nhập
+  async verifyToken (req, res, next) {
+
+    const accessToken = req.cookies?.accessToken;
+    if (!accessToken) {
       return next(new ApiError(StatusCodes.UNAUTHORIZED, 'error', 'Bạn chưa đăng nhập'));
+    }
+
+    try {
+      const reader = await _verifyToken(accessToken, config.jwt.readerAccessKey);
+      // Token hợp lệ
+      req.reader = reader;
+      next();
+    } catch (error) {
+      if (error?.message?.includes('jwt expired')) {
+        next(new ApiError(StatusCodes.GONE, 'error', 'Need to refresh token!'));
+        return;
+      }
+      next(new ApiError(StatusCodes.UNAUTHORIZED, 'error', 'Unauthorized!'));
     }
   }
 };

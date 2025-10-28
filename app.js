@@ -20,9 +20,21 @@ const app = express();
 // Connect to database
 db.connect();
 
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    return callback(null, true);
+  },
+  // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

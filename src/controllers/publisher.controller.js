@@ -6,7 +6,23 @@ class PublisherController {
   // [POST] /api/publishers
   async create(req, res, next) {
     try {
-      const publisher = new Publisher(req.body);
+      // Tạo mã nhà xuất bản
+      const lastPublisher = await Publisher.findOne().sort({ MANXB: -1 }).lean();
+
+      let newNumber = 1;
+
+      if (lastPublisher) {
+        const lastNumber = parseInt(lastPublisher.MANXB.substring(3));
+        newNumber = lastNumber + 1;
+      }
+
+      const newCode = 'NXB' + newNumber.toString().padStart(3, '0');
+
+      // Lưu nhà xuất bản vào db
+      const publisher = new Publisher({
+        MANXB: newCode,
+        ...req.body
+      });
       await publisher.save();
       return res.status(StatusCodes.CREATED).json({
         status: 'success',
@@ -81,11 +97,11 @@ class PublisherController {
       await Publisher.deleteOne({ MANXB: req.params.publisherId });
       return res.status(StatusCodes.OK).json({
         status: 'success',
-        message: 'Xóa sách thành công'
+        message: 'Xóa nhà xuất bản thành công'
       });
     } catch (err) {
       console.error(err);
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Xóa sách thất bại, vui lòng thử lại sau'));
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Xóa nhà xuất bản thất bại, vui lòng thử lại sau'));
     }
   }
 }

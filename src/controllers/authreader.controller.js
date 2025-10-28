@@ -5,6 +5,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../config/index.js';
 import generateToken from '../utils/jwt.util.js';
+import ms from 'ms';
+
+const _verifyToken = async (token, secretSignature) => {
+  return jwt.verify(token, secretSignature);
+};
 
 class authReaderController {
   // Đăng ký
@@ -71,25 +76,25 @@ class authReaderController {
 
       // Tạo jsonwebtoken
       // Tạo access token
-      const accessToken = generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '30s');
+      const accessToken = await generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '15s');
+
+      // Tạo refresh token
+      const refreshToken = await generateToken.generateReaderRefreshToken(reader, config.jwt.readerRefeshKey, '30s');
 
       // Lưu access token vào cookie
       res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: false, // Lúc deploy sửa thành true
-        sameSite: 'Strict',
-        path: '/'
+        sameSite: 'lax',
+        maxAge: ms('14 days')
       });
-
-      // Tạo refresh token
-      const refreshToken = generateToken.generateReaderRefreshToken(reader, config.jwt.readerRefeshKey, '365d');
 
       // Lưu refresh token vào cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: false, // Lúc deploy sẽ sửa thành true
-        path: '/api/auth/refresh',
-        sameSite: 'Strict'
+        sameSite: 'lax',
+        maxAge: ms('14 days')
       });
 
       // Lọc bỏ mật khẩu
@@ -98,7 +103,7 @@ class authReaderController {
       return res.status(StatusCodes.OK).json({
         status: 'success',
         message: 'Đăng nhập thành công',
-        data: { ...others, accessToken }
+        data: others
       });
     } catch (err) {
       console.log(err);
@@ -108,7 +113,7 @@ class authReaderController {
 
   // Refresh token
   // [POST] api/auth/refresh
-  requestRefreshToken (req, res, next) {
+  async requestRefreshToken (req, res, next) {
     // Lấy refresh token từ cookie
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
@@ -116,36 +121,36 @@ class authReaderController {
     }
 
     // Xác thực refresh token
-    jwt.verify(refreshToken, config.jwt.readerRefeshKey, (err, reader) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
+    try {
+      const reader = await _verifyToken(refreshToken, config.jwt.readerRefeshKey);
 
       // Tạo access token mới
-      const newAccessToken = generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '30s');
+      const newAccessToken = await generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '15s');
 
       // Lưu access token vào cookie
       res.cookie('accessToken', newAccessToken, {
         httpOnly: true,
         secure: false, // Lúc deploy sửa thành true
-        sameSite: 'Strict',
-        path: '/'
+        sameSite: 'lax',
+        maxAge: ms('14 days')
       });
 
       // Gửi access token mới về client
       return res.status(StatusCodes.OK).json({
         status: 'success',
         message: 'Refresh token thành công',
-        data: { accessToken: newAccessToken }
+        data: newAccessToken
       });
-    });
+    } catch (error) {
+      return next(new ApiError(StatusCodes.FORBIDDEN, 'error', 'Refresh token không hợp lệ'));
+    }
   }
 
   // Reader logout
+  // [POST] /api/auth/logout
   readerLogout (req, res, next) {
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken', { httpOnly: true, secure: false, sameSite: 'lax' });
+    res.clearCookie('refreshToken', { httpOnly: true, secure: false, sameSite: 'lax' });
     return res.status(StatusCodes.OK).json({
       status: 'success',
       message: 'Bạn đã đăng xuất'
