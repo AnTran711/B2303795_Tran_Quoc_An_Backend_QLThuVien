@@ -5,6 +5,7 @@ import publisherRouter from './src/routes/publisher.route.js';
 import bookBorrowingRouter from './src/routes/bookborrowing.route.js';
 import authReaderRouter from './src/routes/authreader.route.js';
 import readerRouter from './src/routes/reader.route.js';
+import genreRouter from './src/routes/genre.route.js';
 import ApiError from './src/api_error.js';
 import db from './src/utils/mongodb.util.js';
 import path from 'path';
@@ -43,6 +44,7 @@ app.use('/api/publishers', publisherRouter);
 app.use('/api/bookBorrowings', bookBorrowingRouter);
 app.use('/api/auth', authReaderRouter);
 app.use('/api/readers', readerRouter);
+app.use('/api/genres', genreRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to library' });

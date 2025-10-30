@@ -6,7 +6,7 @@ import authReaderMiddleware from '../middlewares/authReaderMiddleware.js';
 const router = express.Router();
 
 router.route('/')
-  .get(authReaderMiddleware.verifyToken, bookController.findAll)
+  .get(bookController.findAll)
   .post(uploadMiddleware.upload.single('ANHBIA'), bookController.create)
   .delete(bookController.deleteAll);
 

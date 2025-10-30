@@ -69,14 +69,17 @@ class PublisherController {
         req.body,
         { new: true }
       );
+      if (!publisher) {
+        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy nhà xuất bản cần cập nhật'));
+      }
       return res.status(StatusCodes.OK).json({
         status: 'success',
-        message: 'Cập nhật sách thành công',
+        message: 'Cập nhật nhà xuất bản thành công',
         data: publisher
       });
     } catch (err) {
       console.error(err);
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Cập nhật sách thất bại, vui lòng thử lại sau'));
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Cập nhật nhà xuất bản thất bại, vui lòng thử lại sau'));
     }
   }
 

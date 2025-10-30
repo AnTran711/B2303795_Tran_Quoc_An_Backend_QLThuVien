@@ -91,6 +91,9 @@ class BookController {
         updateBook,
         { new: true }
       );
+      if (!book) {
+        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy sách cần cập nhật'));
+      }
       return res.status(StatusCodes.OK).json({
         status: 'success',
         message: 'Cập nhật sách thành công',

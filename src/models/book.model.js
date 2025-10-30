@@ -36,9 +36,24 @@ const bookSchema = new Schema({
   },
   TENTACGIA: {
     type: String
-  }
+  },
+  THELOAI: [
+    {
+      type: String
+    }
+  ]
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Virtual populate
+bookSchema.virtual('DSTHELOAI', {
+  ref: 'THELOAI',
+  localField: 'THELOAI',
+  foreignField: 'MATHELOAI',
+  justOne: false
 });
 
 export default mongoose.model('SACH', bookSchema, 'SACH');
