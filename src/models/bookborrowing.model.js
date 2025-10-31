@@ -19,4 +19,19 @@ const bookBorrowingSchema = new Schema({
   timestamps: true
 });
 
+// Virtual populate
+bookBorrowingSchema.virtual('DOCGIA', {
+  ref: 'DOCGIA',
+  localField: 'MADOCGIA',
+  foreignField: 'MADOCGIA',
+  justOne: true
+});
+
+bookBorrowingSchema.virtual('SACH', {
+  ref: 'SACH',
+  localField: 'MASACH',
+  foreignField: 'MASACH',
+  justOne: true
+});
+
 export default mongoose.model('THEODOIMUONSACH', bookBorrowingSchema, 'THEODOIMUONSACH');

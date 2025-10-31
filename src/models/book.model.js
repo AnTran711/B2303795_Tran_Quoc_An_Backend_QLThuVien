@@ -56,4 +56,11 @@ bookSchema.virtual('DSTHELOAI', {
   justOne: false
 });
 
+bookSchema.virtual('NHAXUATBAN', {
+  ref: 'NHAXUATBAN',
+  localField: 'MANXB',
+  foreignField: 'MANXB',
+  justOne: true
+});
+
 export default mongoose.model('SACH', bookSchema, 'SACH');

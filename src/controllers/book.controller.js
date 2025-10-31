@@ -68,11 +68,18 @@ class BookController {
   // [GET] /api/books/:bookId
   async findOne(req, res, next) {
     try {
-      const book = await Book.findOne({ MASACH: req.params.bookId }).lean();
-      return res.status(200).send(book);
+      const book = await Book.findOne({ MASACH: req.params.bookId }).populate('DSTHELOAI').populate('NHAXUATBAN').lean();
+      if (!book) {
+        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy sách phù hợp'));
+      }
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'Lấy sách thành công',
+        data: book
+      });
     } catch (err) {
       console.error(err);
-      return next(new ApiError(500, 'An error occurred while retrieving a book'));
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối đến server, vui lòng thử lại sau'));
     }
   }
 
