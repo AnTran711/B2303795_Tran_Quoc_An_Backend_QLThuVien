@@ -6,12 +6,6 @@ class BookController {
   // [POST] /api/books/
   async create(req, res, next) {
     try {
-      // Validate trùng mã sách
-      // const existingBook = await Book.findOne({ MASACH: req.body.MASACH });
-      // if (existingBook) {
-      //   return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Mã sách đã tồn tại trong hệ thống'));
-      // }
-
       // Thêm sách
 
       // Tại đường đẫn tới hình ảnh

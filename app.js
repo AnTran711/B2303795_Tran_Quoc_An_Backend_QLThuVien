@@ -41,7 +41,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/books', bookRouter);
 app.use('/api/publishers', publisherRouter);
-app.use('/api/bookBorrowings', bookBorrowingRouter);
+app.use('/api/book-borrowing', bookBorrowingRouter);
 app.use('/api/auth', authReaderRouter);
 app.use('/api/readers', readerRouter);
 app.use('/api/genres', genreRouter);

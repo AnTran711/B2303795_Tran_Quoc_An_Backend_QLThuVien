@@ -76,10 +76,10 @@ class authReaderController {
 
       // Tạo jsonwebtoken
       // Tạo access token
-      const accessToken = await generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '15s');
+      const accessToken = await generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '10m');
 
       // Tạo refresh token
-      const refreshToken = await generateToken.generateReaderRefreshToken(reader, config.jwt.readerRefeshKey, '30s');
+      const refreshToken = await generateToken.generateReaderRefreshToken(reader, config.jwt.readerRefeshKey, '2w');
 
       // Lưu access token vào cookie
       res.cookie('accessToken', accessToken, {
@@ -125,7 +125,7 @@ class authReaderController {
       const reader = await _verifyToken(refreshToken, config.jwt.readerRefeshKey);
 
       // Tạo access token mới
-      const newAccessToken = await generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '15s');
+      const newAccessToken = await generateToken.generateReaderAccessToken(reader, config.jwt.readerAccessKey, '10m');
 
       // Lưu access token vào cookie
       res.cookie('accessToken', newAccessToken, {

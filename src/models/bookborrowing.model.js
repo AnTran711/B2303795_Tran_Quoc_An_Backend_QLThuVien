@@ -9,14 +9,26 @@ const bookBorrowingSchema = new Schema({
   MASACH: {
     type: String
   },
+  NGAYYEUCAU: {
+    type: Date,
+    default: () => Date.now()
+  },
   NGAYMUON: {
-    type: Date
+    type: Date,
+    default: null
   },
   NGAYTRA: {
-    type: Date
+    type: Date,
+    default: null
+  },
+  HANTRA: {
+    type: Date,
+    default: null
+  },
+  TRANGTHAI: {
+    type: String,
+    default: 'Chờ duyệt'
   }
-}, {
-  timestamps: true
 });
 
 // Virtual populate
