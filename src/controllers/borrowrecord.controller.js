@@ -1,12 +1,12 @@
-import BookBorrowing from '../models/bookborrowing.model.js';
+import BorrowRecord from '../models/borrowrecord.model.js';
 import ApiError from '../api_error.js';
 import { StatusCodes } from 'http-status-codes';
 
-class BookBorrowingController {
+class BorrowRecordController {
   // [GET] /api/book-borrowing
-  async getAllBorrowRecord(req, res, next) {
+  async getBorrowRecords(req, res, next) {
     try {
-      const borrowRecords = await BookBorrowing.find().populate('DOCGIA').populate('SACH').lean();
+      const borrowRecords = await BorrowRecord.find().populate('DOCGIA').populate('SACH').lean();
       return res.json({
         status: 'success',
         message: 'Lấy sách thành công',
@@ -20,7 +20,7 @@ class BookBorrowingController {
   // [POST] /api/book-borrowing
   async borrow(req, res, next) {
     try {
-      const bookBorrowing = new BookBorrowing(req.body);
+      const bookBorrowing = new BorrowRecord(req.body);
       await bookBorrowing.save();
       return res.json({
         status: 'success',
@@ -37,14 +37,25 @@ class BookBorrowingController {
       const hanTra = new Date();
       hanTra.setDate(hanTra.getDate() + 7);
 
-      await BookBorrowing.findByIdAndUpdate(req.params.id, {
-        TRANGTHAI: 'Đã duyệt',
+      const record = await BorrowRecord.findOneAndUpdate({
+        _id: req.params.id,
+        TRANGTHAI: 'Chờ duyệt'
+      }, {
+        TRANGTHAI: 'Đang mượn',
         NGAYMUON: new Date(),
         HANTRA: hanTra
-      });
+      }, {
+        new: true
+      }).populate('DOCGIA').populate('SACH').lean();
+
+      if (!record) {
+        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy yêu cầu mượn'));
+      }
+
       return res.json({
         status: 'success',
-        message: 'Đã duyệt yêu cầu mượn'
+        message: 'Đã duyệt yêu cầu mượn',
+        data: record
       });
     } catch (err) {
       return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
@@ -54,12 +65,23 @@ class BookBorrowingController {
   // [PUT] /api/book-borrowing/reject/:id
   async reject(req, res, next) {
     try {
-      await BookBorrowing.findByIdAndUpdate(req.params.id, {
+      const record = await BorrowRecord.findOneAndUpdate({
+        _id: req.params.id,
+        TRANGTHAI: 'Chờ duyệt'
+      }, {
         TRANGTHAI: 'Từ chối'
-      });
+      }, {
+        new: true
+      }).populate('DOCGIA').populate('SACH').lean();
+
+      if (!record) {
+        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy yêu cầu mượn'));
+      }
+
       return res.json({
         status: 'success',
-        message: 'Đã từ chối yêu cầu mượn'
+        message: 'Đã từ chối yêu cầu mượn',
+        data: record
       });
     } catch (err) {
       return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
@@ -67,15 +89,26 @@ class BookBorrowingController {
   }
 
   // [PUT] /api/book-borrowing/return/:id
-  async return(req, res, next) {
+  async returnBook(req, res, next) {
     try {
-      await BookBorrowing.findByIdAndUpdate(req.params.id, {
+      const record = await BorrowRecord.findOneAndUpdate({
+        _id: req.params.id,
+        TRANGTHAI: 'Đang mượn'
+      }, {
         TRANGTHAI: 'Đã trả',
         NGAYTRA: new Date()
-      });
+      }, {
+        new: true
+      }).populate('DOCGIA').populate('SACH').lean();
+
+      if (!record) {
+        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy sách cần trả'));
+      }
+
       return res.json({
         status: 'success',
-        message: 'Đã trả sách thành công'
+        message: 'Xác nhận trả sách thành công',
+        data: record
       });
     } catch (err) {
       return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
@@ -83,4 +116,4 @@ class BookBorrowingController {
   }
 }
 
-export default new BookBorrowingController();
+export default new BorrowRecordController();

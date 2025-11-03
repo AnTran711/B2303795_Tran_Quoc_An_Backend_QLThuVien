@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const bookBorrowingSchema = new Schema({
+const borrowRecordSchema = new Schema({
   MADOCGIA: {
     type: String
   },
@@ -32,18 +32,18 @@ const bookBorrowingSchema = new Schema({
 });
 
 // Virtual populate
-bookBorrowingSchema.virtual('DOCGIA', {
+borrowRecordSchema.virtual('DOCGIA', {
   ref: 'DOCGIA',
   localField: 'MADOCGIA',
   foreignField: 'MADOCGIA',
   justOne: true
 });
 
-bookBorrowingSchema.virtual('SACH', {
+borrowRecordSchema.virtual('SACH', {
   ref: 'SACH',
   localField: 'MASACH',
   foreignField: 'MASACH',
   justOne: true
 });
 
-export default mongoose.model('THEODOIMUONSACH', bookBorrowingSchema, 'THEODOIMUONSACH');
+export default mongoose.model('THEODOIMUONSACH', borrowRecordSchema, 'THEODOIMUONSACH');

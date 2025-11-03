@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bookRouter from './src/routes/book.route.js';
 import publisherRouter from './src/routes/publisher.route.js';
-import bookBorrowingRouter from './src/routes/bookborrowing.route.js';
+import borrowRecordRouter from './src/routes/borrowrecord.route.js';
 import authReaderRouter from './src/routes/authreader.route.js';
 import readerRouter from './src/routes/reader.route.js';
 import genreRouter from './src/routes/genre.route.js';
@@ -41,7 +41,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/books', bookRouter);
 app.use('/api/publishers', publisherRouter);
-app.use('/api/book-borrowing', bookBorrowingRouter);
+app.use('/api/borrow-records', borrowRecordRouter);
 app.use('/api/auth', authReaderRouter);
 app.use('/api/readers', readerRouter);
 app.use('/api/genres', genreRouter);
