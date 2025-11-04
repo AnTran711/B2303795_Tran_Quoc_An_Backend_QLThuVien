@@ -27,7 +27,7 @@ const borrowRecordSchema = new Schema({
   },
   TRANGTHAI: {
     type: String,
-    default: 'Chờ duyệt'
+    default: 'pending'
   }
 });
 

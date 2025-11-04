@@ -119,17 +119,6 @@ class BookController {
       return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Xóa sách thất bại, vui lòng thử lại sau'));
     }
   }
-
-  // [DELETE] /api/books/
-  async deleteAll(req, res, next) {
-    try {
-      const result = await Book.deleteMany();
-      return res.send({ message: `${result.deletedCount} books were deleted successfully` });
-    } catch (err) {
-      console.error(err);
-      return next(new ApiError(500, 'An error occurred while removing all books'));
-    }
-  }
 }
 
 export default new BookController();

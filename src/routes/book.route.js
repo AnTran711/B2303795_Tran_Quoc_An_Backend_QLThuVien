@@ -7,8 +7,7 @@ const router = express.Router();
 
 router.route('/')
   .get(bookController.findAll)
-  .post(uploadMiddleware.upload.single('ANHBIA'), bookController.create)
-  .delete(bookController.deleteAll);
+  .post(uploadMiddleware.upload.single('ANHBIA'), bookController.create);
 
 router.route('/:bookId')
   .get(bookController.findOne)

@@ -50,17 +50,6 @@ class PublisherController {
     }
   }
 
-  // [GET] /api/publishers/:publisherId
-  async findOne(req, res, next) {
-    try {
-      const publisher = await Publisher.findOne({ MANXB: req.params.publisherId }).lean();
-      return res.send(publisher);
-    } catch (err) {
-      console.error(err);
-      return next(new ApiError(500, 'An error occurred while retrieving a publisher'));
-    }
-  }
-
   // [PUT] /api/publishers/:publisherId
   async update(req, res, next) {
     try {
@@ -80,17 +69,6 @@ class PublisherController {
     } catch (err) {
       console.error(err);
       return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Cập nhật nhà xuất bản thất bại, vui lòng thử lại sau'));
-    }
-  }
-
-  // [DELETE] /api/publishers
-  async deleteAll(req, res, next) {
-    try {
-      const result = await Publisher.deleteMany();
-      return res.send({ message: `${result.deletedCount} publishers were deleted successfully` });
-    } catch (err) {
-      console.error(err);
-      return next(new ApiError(500, 'An error occurred while removing all publishers '));
     }
   }
 

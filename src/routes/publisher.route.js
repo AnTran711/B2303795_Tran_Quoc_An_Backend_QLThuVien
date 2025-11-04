@@ -5,11 +5,9 @@ const router = express.Router();
 
 router.route('/')
   .post(publisherController.create)
-  .get(publisherController.findAll)
-  .delete(publisherController.deleteAll);
+  .get(publisherController.findAll);
 
 router.route('/:publisherId')
-  .get(publisherController.findOne)
   .put(publisherController.update)
   .delete(publisherController.delete);
 

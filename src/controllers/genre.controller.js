@@ -50,17 +50,6 @@ class GenreController {
     }
   }
 
-  // [GET] /api/genres/:genreId
-  async findOne(req, res, next) {
-    try {
-      const genre = await Genre.findOne({ MATHELOAI: req.params.genreId }).lean();
-      return res.send(genre);
-    } catch (err) {
-      console.error(err);
-      return next(new ApiError(500, 'An error occurred while retrieving a genre'));
-    }
-  }
-
   // [PUT] /api/genres/:genreId
   async update(req, res, next) {
     try {
@@ -80,17 +69,6 @@ class GenreController {
     } catch (err) {
       console.error(err);
       return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Cập nhật thể loại thất bại, vui lòng thử lại sau'));
-    }
-  }
-
-  // [DELETE] /api/genres
-  async deleteAll(req, res, next) {
-    try {
-      const result = await Genre.deleteMany();
-      return res.send({ message: `${result.deletedCount} genres were deleted successfully` });
-    } catch (err) {
-      console.error(err);
-      return next(new ApiError(500, 'An error occurred while removing all genres '));
     }
   }
 

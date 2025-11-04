@@ -5,11 +5,9 @@ const router = express.Router();
 
 router.route('/')
   .post(genreController.create)
-  .get(genreController.findAll)
-  .delete(genreController.deleteAll);
+  .get(genreController.findAll);
 
 router.route('/:genreId')
-  .get(genreController.findOne)
   .put(genreController.update)
   .delete(genreController.delete);
 
