@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
 
 // Handle 404 error
 app.use((req, res, next) => {
-  return next(new ApiError('error', 'Resource not found'));
+  return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Resource not found'));
 });
 
 // Define error-handling middleware last

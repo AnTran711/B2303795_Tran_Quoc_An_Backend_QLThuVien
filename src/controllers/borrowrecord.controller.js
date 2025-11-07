@@ -15,7 +15,9 @@ class BorrowRecordController {
   // [GET] /api/borrow-records
   async getBorrowRecords(req, res, next) {
     try {
-      const { filter, sort, search, readerId } = req.query;
+      let { filter, sort, search, readerId } = req.query;
+
+      if (search === null || search === 'null' || search === undefined) search = '';
 
       const sortOrder = sort === 'asc' ? 1 : -1;
 
@@ -148,6 +150,27 @@ class BorrowRecordController {
         status: 'success',
         message: 'Xác nhận trả sách thành công',
         data: record
+      });
+    } catch (err) {
+      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
+    }
+  }
+
+  async cancelRequest(req, res, next) {
+    try {
+      const deletedRecord = await BorrowRecord.findOneAndDelete({
+        _id: req.params.id,
+        TRANGTHAI: 'pending'
+      });
+      console.log(deletedRecord);
+      if (!deletedRecord) {
+        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy yêu cầu mượn sách mà bạn muốn hủy'));
+      }
+
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'Hủy yêu cầu mượn sách thành công',
+        data: deletedRecord
       });
     } catch (err) {
       return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
