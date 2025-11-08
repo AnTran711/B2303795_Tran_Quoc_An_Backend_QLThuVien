@@ -1,7 +1,7 @@
 import express from 'express';
 import bookController from '../controllers/book.controller.js';
 import { uploadMiddleware } from '../middlewares/uploadMiddleware.js';
-import authReaderMiddleware from '../middlewares/authReaderMiddleware.js';
+import authEmployeeMiddleware from '../middlewares/authEmployeeMiddleware.js';
 
 const router = express.Router();
 
@@ -12,6 +12,6 @@ router.route('/')
 router.route('/:bookId')
   .get(bookController.findOne)
   .put(uploadMiddleware.upload.single('ANHBIA'), bookController.update)
-  .delete(bookController.delete);
+  .delete(authEmployeeMiddleware.verifyToken, bookController.delete);
 
 export default router;

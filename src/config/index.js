@@ -10,7 +10,9 @@ const config = {
   },
   jwt: {
     readerAccessKey: process.env.JWT_READER_ACCESS_KEY,
-    readerRefeshKey: process.env.JWT_READER_REFRESH_KEY
+    readerRefreshKey: process.env.JWT_READER_REFRESH_KEY,
+    employeeAccessKey: process.env.JWT_EMPLOYEE_ACCESS_KEY,
+    employeeRefreshKey: process.env.JWT_EMPLOYEE_REFRESH_KEY
   }
 };
 

@@ -16,6 +16,28 @@ const generateToken = {
       secretKey,
       { expiresIn: expiresIn }
     );
+  },
+  // Tạo access token của nhân viên
+  async generateEmployeeAccessToken (employee, secretKey, expiresIn) {
+    return jwt.sign(
+      {
+        MSNV: employee.MSNV,
+        CHUCVU: employee.CHUCVU
+      },
+      secretKey,
+      { expiresIn: expiresIn }
+    );
+  },
+  // Tạo refresh token của nhân viên
+  async generateEmployeeRefreshToken (employee, secretKey, expiresIn) {
+    return jwt.sign(
+      {
+        MSNV: employee.MSNV,
+        CHUCVU: employee.CHUCVU
+      },
+      secretKey,
+      { expiresIn: expiresIn }
+    );
   }
 };
 

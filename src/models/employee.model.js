@@ -5,14 +5,21 @@ const Schema = mongoose.Schema;
 const employeeSchema = new Schema({
   MSNV: {
     type: String,
-    required: true,
+    default: () => 'NV' + Date.now() + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
     unique: true
   },
   HOTENNV: {
     type: String,
     required: true
   },
-  PASSWORD: {
+  NGAYSINH: {
+    type: String
+  },
+  PHAI: {
+    // nam: true, nữ: false
+    type: Boolean
+  },
+  MATKHAU: {
     type: String
   },
   CHUCVU: {
@@ -21,8 +28,10 @@ const employeeSchema = new Schema({
   DIACHI: {
     type: String
   },
-  SODIENTHOAI: {
-    type: String
+  DIENTHOAI: {
+    type: String,
+    required: true,
+    unique: true
   }
 }, {
   timestamps: true

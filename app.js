@@ -4,7 +4,7 @@ import bookRouter from './src/routes/book.route.js';
 import publisherRouter from './src/routes/publisher.route.js';
 import borrowRecordRouter from './src/routes/borrowrecord.route.js';
 import authReaderRouter from './src/routes/authreader.route.js';
-import readerRouter from './src/routes/reader.route.js';
+import authEmployeeRouter from './src/routes/authemployee.route.js';
 import genreRouter from './src/routes/genre.route.js';
 import ApiError from './src/api_error.js';
 import db from './src/utils/mongodb.util.js';
@@ -43,7 +43,7 @@ app.use('/api/books', bookRouter);
 app.use('/api/publishers', publisherRouter);
 app.use('/api/borrow-records', borrowRecordRouter);
 app.use('/api/auth', authReaderRouter);
-app.use('/api/readers', readerRouter);
+app.use('/api/auth-employee', authEmployeeRouter);
 app.use('/api/genres', genreRouter);
 
 app.get('/', (req, res) => {
