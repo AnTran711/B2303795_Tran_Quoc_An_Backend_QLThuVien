@@ -23,10 +23,9 @@ const authEmployeeMiddleware = {
       next();
     } catch (error) {
       if (error?.message?.includes('jwt expired')) {
-        next(new ApiError(StatusCodes.GONE, 'error', 'Need to refresh token!'));
-        return;
+        return next(new ApiError(StatusCodes.GONE, 'error', 'Need to refresh token!'));
       }
-      next(new ApiError(StatusCodes.UNAUTHORIZED, 'error', 'Unauthorized!'));
+      return next(new ApiError(StatusCodes.UNAUTHORIZED, 'error', 'Unauthorized!'));
     }
   }
 };

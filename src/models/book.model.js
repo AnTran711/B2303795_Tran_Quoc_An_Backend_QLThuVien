@@ -24,9 +24,6 @@ const bookSchema = new Schema({
   SOQUYEN: {
     type: Number
   },
-  SACHCONLAI: {
-    type: Number
-  },
   NAMXUATBAN: {
     type: Number
   },
