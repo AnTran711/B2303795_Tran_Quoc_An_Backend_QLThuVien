@@ -2,6 +2,15 @@ import Genre from '../models/genre.model.js';
 import ApiError from '../api_error.js';
 import { StatusCodes } from 'http-status-codes';
 
+// Hàm xóa dấu
+function removeVietnameseTones(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D');
+}
+
 class GenreController {
   // [POST] /api/genres
   async create(req, res, next) {
@@ -37,12 +46,64 @@ class GenreController {
 
   // [GET] /api/genres
   async findAll(req, res, next) {
+    let {
+      page,
+      limit,
+      search,
+      sort
+    } = req.query;
+
+    // Phân trang
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    // Tìm kiếm
+    if (search === null || search === 'null' || search === undefined) search = '';
+
+    // Xử lý sắp xếp, mặc định là sắp xếp tăng
+    let sortOrder;
+
+    if (sort !== undefined) {
+      sortOrder = sort === 'true' ? 1 : -1;
+    } else {
+      sortOrder = 1;
+    }
+
     try {
-      const genres = await Genre.find().lean();
+      let genres = await Genre.find().sort({ MATHELOAI: sortOrder }).lean();
+
+      // Xử lý tìm kiếm
+      if (search.trim()) {
+        const q = removeVietnameseTones(search.trim().toLowerCase());
+        genres = genres.filter(
+          g => removeVietnameseTones(g.TENTHELOAI.toLowerCase()).includes(q)
+        );
+      }
+
+      let start, end, totalPages;
+
+      // Phân trang
+      if (page === -1) {
+        start = 0;
+        end = genres.length;
+        totalPages = 1;
+      } else {
+        const total = genres.length;
+        totalPages = Math.ceil(total / limit);
+        if (page > totalPages && totalPages > 0) {
+          page = totalPages;
+        }
+        start = (page - 1) * limit;
+        end = start + limit;
+      }
+
+      const paginatedGenres = genres.slice(start, end);
+
       return res.status(StatusCodes.OK).json({
         status: 'success',
         message: 'Lấy thể loại thành công',
-        data: genres
+        totalPages: totalPages,
+        data: paginatedGenres
       });
     } catch (err) {
       console.error(err);

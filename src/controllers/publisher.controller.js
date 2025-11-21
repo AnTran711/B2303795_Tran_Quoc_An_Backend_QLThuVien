@@ -2,6 +2,15 @@ import Publisher from '../models/publisher.model.js';
 import ApiError from '../api_error.js';
 import { StatusCodes } from 'http-status-codes';
 
+// Hàm xóa dấu
+function removeVietnameseTones(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D');
+}
+
 class PublisherController {
   // [POST] /api/publishers
   async create(req, res, next) {
@@ -37,12 +46,64 @@ class PublisherController {
 
   // [GET] /api/publishers
   async findAll(req, res, next) {
+    let {
+      page,
+      limit,
+      search,
+      sort
+    } = req.query;
+
+    // Phân trang
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    // Tìm kiếm
+    if (search === null || search === 'null' || search === undefined) search = '';
+
+    // Xử lý sắp xếp, mặc định là sắp xếp tăng
+    let sortOrder;
+
+    if (sort !== undefined) {
+      sortOrder = sort === 'true' ? 1 : -1;
+    } else {
+      sortOrder = 1;
+    }
+
     try {
-      const publishers = await Publisher.find().lean();
+      let publishers = await Publisher.find().sort({ MANXB: sortOrder }).lean();
+
+      // Xử lý tìm kiếm
+      if (search.trim()) {
+        const q = removeVietnameseTones(search.trim().toLowerCase());
+        publishers = publishers.filter(
+          p => removeVietnameseTones(p.TENNXB.toLowerCase()).includes(q)
+        );
+      }
+
+      let start, end, totalPages;
+
+      // Phân trang
+      if (page === -1) {
+        start = 0;
+        end = publishers.length;
+        totalPages = 1;
+      } else {
+        const total = publishers.length;
+        totalPages = Math.ceil(total / limit);
+        if (page > totalPages && totalPages > 0) {
+          page = totalPages;
+        }
+        start = (page - 1) * limit;
+        end = start + limit;
+      }
+
+      const paginatedPublishers = publishers.slice(start, end);
+
       return res.status(StatusCodes.OK).json({
         status: 'success',
         message: 'Lấy nhà xuất bản thành công',
-        data: publishers
+        totalPages: totalPages,
+        data: paginatedPublishers
       });
     } catch (err) {
       console.error(err);
