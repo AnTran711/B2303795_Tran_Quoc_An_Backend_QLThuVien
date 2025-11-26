@@ -6,6 +6,7 @@ import borrowRecordRouter from './src/routes/borrowrecord.route.js';
 import authReaderRouter from './src/routes/authreader.route.js';
 import authEmployeeRouter from './src/routes/authemployee.route.js';
 import genreRouter from './src/routes/genre.route.js';
+import dashboardRouter from './src/routes/dashboard.route.js';
 import ApiError from './src/api_error.js';
 import db from './src/utils/mongodb.util.js';
 import path from 'path';
@@ -45,6 +46,7 @@ app.use('/api/borrow-records', borrowRecordRouter);
 app.use('/api/auth', authReaderRouter);
 app.use('/api/auth-employee', authEmployeeRouter);
 app.use('/api/genres', genreRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to library' });

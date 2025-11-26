@@ -54,11 +54,11 @@ class BorrowRecordController {
     try {
       const numberOfBookBorrowing = await BorrowRecord.countDocuments({
         MADOCGIA: req.body.MADOCGIA,
-        TRANGTHAI: 'borrowed'
+        TRANGTHAI: { $in: ['borrowed', 'pending'] }
       });
 
       if (numberOfBookBorrowing >= 3) {
-        return next(new ApiError(StatusCodes.FORBIDDEN, 'error', 'Bạn đang đã mượn tối đa 3 cuốn sách, không thể mượn thêm'));
+        return next(new ApiError(StatusCodes.CONFLICT, 'error', 'Bạn đã có tối đa 3 cuốn đang chờ duyệt hoặc đang mượn, không thể gửi thêm yêu cầu'));
       }
 
       const bookBorrowing = new BorrowRecord(req.body);
