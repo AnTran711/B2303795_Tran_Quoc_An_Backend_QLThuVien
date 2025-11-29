@@ -13,6 +13,9 @@ const config = {
     readerRefreshKey: process.env.JWT_READER_REFRESH_KEY,
     employeeAccessKey: process.env.JWT_EMPLOYEE_ACCESS_KEY,
     employeeRefreshKey: process.env.JWT_EMPLOYEE_REFRESH_KEY
+  },
+  aiAPI: {
+    key: process.env.GEMINI_API_KEY
   }
 };
 
