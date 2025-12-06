@@ -17,7 +17,8 @@ class BorrowRecordController {
     try {
       let { filter, sort, search, readerId } = req.query;
 
-      if (search === null || search === 'null' || search === undefined) search = '';
+      if (search === null || search === 'null' || search === undefined)
+        search = '';
 
       const sortOrder = sort === 'asc' ? 1 : -1;
 
@@ -34,8 +35,8 @@ class BorrowRecordController {
 
       if (search.trim()) {
         const q = removeVietnameseTones(search.trim().toLowerCase());
-        borrowRecords = borrowRecords.filter(
-          br => removeVietnameseTones(br.SACH.TENSACH.toLowerCase()).includes(q)
+        borrowRecords = borrowRecords.filter((br) =>
+          removeVietnameseTones(br.SACH.TENSACH.toLowerCase()).includes(q)
         );
       }
 
@@ -45,7 +46,13 @@ class BorrowRecordController {
         data: borrowRecords
       });
     } catch (error) {
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối đến server, vui lòng thử lại sau'));
+      return next(
+        new ApiError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'error',
+          'Không thể kết nối đến server, vui lòng thử lại sau'
+        )
+      );
     }
   }
 
@@ -58,7 +65,13 @@ class BorrowRecordController {
       });
 
       if (numberOfBookBorrowing >= 3) {
-        return next(new ApiError(StatusCodes.CONFLICT, 'error', 'Bạn đã có tối đa 3 cuốn đang chờ duyệt hoặc đang mượn, không thể gửi thêm yêu cầu'));
+        return next(
+          new ApiError(
+            StatusCodes.CONFLICT,
+            'error',
+            'Bạn đã có tối đa 3 cuốn đang chờ duyệt hoặc đang mượn, không thể gửi thêm yêu cầu'
+          )
+        );
       }
 
       const bookBorrowing = new BorrowRecord(req.body);
@@ -68,7 +81,13 @@ class BorrowRecordController {
         message: 'Gửi yêu cầu mượn sách thành công'
       });
     } catch (err) {
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
+      return next(
+        new ApiError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'error',
+          'Không thể kết nối tới server, vui lòng thử lại sau'
+        )
+      );
     }
   }
 
@@ -78,19 +97,32 @@ class BorrowRecordController {
       const hanTra = new Date();
       hanTra.setDate(hanTra.getDate() + 7);
 
-      const record = await BorrowRecord.findOneAndUpdate({
-        _id: req.params.id,
-        TRANGTHAI: 'pending'
-      }, {
-        TRANGTHAI: 'borrowed',
-        NGAYMUON: new Date(),
-        HANTRA: hanTra
-      }, {
-        new: true
-      }).populate('DOCGIA').populate('SACH').lean();
+      const record = await BorrowRecord.findOneAndUpdate(
+        {
+          _id: req.params.id,
+          TRANGTHAI: 'pending'
+        },
+        {
+          TRANGTHAI: 'borrowed',
+          NGAYMUON: new Date(),
+          HANTRA: hanTra
+        },
+        {
+          new: true
+        }
+      )
+        .populate('DOCGIA')
+        .populate('SACH')
+        .lean();
 
       if (!record) {
-        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy yêu cầu mượn'));
+        return next(
+          new ApiError(
+            StatusCodes.NOT_FOUND,
+            'error',
+            'Không tìm thấy yêu cầu mượn'
+          )
+        );
       }
 
       return res.status(StatusCodes.OK).json({
@@ -99,24 +131,43 @@ class BorrowRecordController {
         data: record
       });
     } catch (err) {
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
+      return next(
+        new ApiError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'error',
+          'Không thể kết nối tới server, vui lòng thử lại sau'
+        )
+      );
     }
   }
 
   // [PUT] /api/borrow-records/reject/:id
   async reject(req, res, next) {
     try {
-      const record = await BorrowRecord.findOneAndUpdate({
-        _id: req.params.id,
-        TRANGTHAI: 'pending'
-      }, {
-        TRANGTHAI: 'rejected'
-      }, {
-        new: true
-      }).populate('DOCGIA').populate('SACH').lean();
+      const record = await BorrowRecord.findOneAndUpdate(
+        {
+          _id: req.params.id,
+          TRANGTHAI: 'pending'
+        },
+        {
+          TRANGTHAI: 'rejected'
+        },
+        {
+          new: true
+        }
+      )
+        .populate('DOCGIA')
+        .populate('SACH')
+        .lean();
 
       if (!record) {
-        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy yêu cầu mượn'));
+        return next(
+          new ApiError(
+            StatusCodes.NOT_FOUND,
+            'error',
+            'Không tìm thấy yêu cầu mượn'
+          )
+        );
       }
 
       return res.status(StatusCodes.OK).json({
@@ -125,25 +176,44 @@ class BorrowRecordController {
         data: record
       });
     } catch (err) {
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
+      return next(
+        new ApiError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'error',
+          'Không thể kết nối tới server, vui lòng thử lại sau'
+        )
+      );
     }
   }
 
   // [PUT] /api/borrow-records/return/:id
   async returnBook(req, res, next) {
     try {
-      const record = await BorrowRecord.findOneAndUpdate({
-        _id: req.params.id,
-        TRANGTHAI: 'borrowed'
-      }, {
-        TRANGTHAI: 'returned',
-        NGAYTRA: new Date()
-      }, {
-        new: true
-      }).populate('DOCGIA').populate('SACH').lean();
+      const record = await BorrowRecord.findOneAndUpdate(
+        {
+          _id: req.params.id,
+          TRANGTHAI: 'borrowed'
+        },
+        {
+          TRANGTHAI: 'returned',
+          NGAYTRA: new Date()
+        },
+        {
+          new: true
+        }
+      )
+        .populate('DOCGIA')
+        .populate('SACH')
+        .lean();
 
       if (!record) {
-        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy sách cần trả'));
+        return next(
+          new ApiError(
+            StatusCodes.NOT_FOUND,
+            'error',
+            'Không tìm thấy sách cần trả'
+          )
+        );
       }
 
       return res.status(StatusCodes.OK).json({
@@ -152,7 +222,13 @@ class BorrowRecordController {
         data: record
       });
     } catch (err) {
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
+      return next(
+        new ApiError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'error',
+          'Không thể kết nối tới server, vui lòng thử lại sau'
+        )
+      );
     }
   }
 
@@ -162,9 +238,14 @@ class BorrowRecordController {
         _id: req.params.id,
         TRANGTHAI: 'pending'
       });
-      console.log(deletedRecord);
       if (!deletedRecord) {
-        return next(new ApiError(StatusCodes.NOT_FOUND, 'error', 'Không tìm thấy yêu cầu mượn sách mà bạn muốn hủy'));
+        return next(
+          new ApiError(
+            StatusCodes.NOT_FOUND,
+            'error',
+            'Không tìm thấy yêu cầu mượn sách mà bạn muốn hủy'
+          )
+        );
       }
 
       return res.status(StatusCodes.OK).json({
@@ -173,7 +254,13 @@ class BorrowRecordController {
         data: deletedRecord
       });
     } catch (err) {
-      return next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'error', 'Không thể kết nối tới server, vui lòng thử lại sau'));
+      return next(
+        new ApiError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'error',
+          'Không thể kết nối tới server, vui lòng thử lại sau'
+        )
+      );
     }
   }
 }
